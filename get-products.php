@@ -32,3 +32,36 @@ if ($err) {
   print_r($xmlResponse);
 
 }
+
+// import part
+
+$directoXml = get_first_available_import_xml();
+if ( ! $directoXml ) {
+  echo "ALL FILES PARSED" . PHP_EOL;
+  die();
+}
+
+
+//functions
+
+
+// functions start here
+
+function get_first_available_import_xml() {
+	$files = glob( dirname( __FILE__ ) . '/prepared/items*' ); // get all file names
+	foreach ( $files as $file ) { // iterate files
+
+		if ( is_file( $file ) ) {
+			$data        = file_get_contents( $file );
+			$backup_file = str_replace( '/prepared/', '/backup_prepared/', (string) $file );
+			$backup_file = str_replace( '.xml', '-' . (string) time() . '.xml', $backup_file );
+			copy( $file, $backup_file );
+			unlink( $file ); // delete file
+			echo "Delete" . $file;
+
+			return $data;
+		}
+	}
+
+	return null;
+}
